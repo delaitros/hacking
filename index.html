@@ -531,11 +531,12 @@
                 const userCredential = await signInAnonymously(auth);
                 userId = userCredential.user.uid;
                 console.log("Autenticación exitosa como usuario anónimo.");
+                // Ahora que el usuario está autenticado, podemos cargar las preguntas.
+                fetchQuestions();
             } catch (error) {
                 console.error("Error de autenticación: ", error);
             }
             
-            fetchQuestions();
             // Intenta reproducir la música automáticamente
             backgroundMusic.play().then(() => {
                 console.log('Música reproducida automáticamente.');
@@ -545,9 +546,6 @@
             });
         };
 
-    </script>
-</body>
-</html>
     </script>
 </body>
 </html>

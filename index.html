@@ -313,7 +313,11 @@
                     questionDisplay.textContent = 'Error: No se pueden cargar las preguntas. Por favor, reinicia la aplicación.';
                     return;
                 }
-                const querySnapshot = await getDocs(collection(db, `/artifacts/${appId}/public/data/quiz_questions`));
+                
+                // La ruta se ha corregido para que busque la colección directamente en la raíz de tu base de datos,
+                // que es donde se encuentra según la captura de pantalla que me pasaste.
+                const querySnapshot = await getDocs(collection(db, 'quiz_questions'));
+                
                 if (querySnapshot.empty) {
                     questionDisplay.textContent = 'No hay preguntas disponibles. Por favor, añade preguntas a la base de datos.';
                     answerInputContainer.style.display = 'none';

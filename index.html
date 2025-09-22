@@ -235,19 +235,21 @@
         </div>
     </div>
 
-    <!-- Audio para la música de fondo -->
-    <audio id="background-music" loop>
-        <source src="https://www.bensound.com/bensound-music/bensound-jazzyfrenchy.mp3" type="audio/mpeg">
-        Tu navegador no soporta el elemento de audio.
+    <!-- Correcto: 16bit success -->
+    <audio id="correct-sound" preload="auto">
+      <source src="https://opengameart.org/sites/default/files/16bit_success.wav" type="audio/wav">
     </audio>
 
-    <!-- Audios para efectos de sonido -->
-    <audio id="correct-sound">
-        <source src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3/correct.mp3" type="audio/mpeg">
+    <!-- Incorrecto: Error Signal 1 (preview MP3) -->
+    <audio id="incorrect-sound" preload="auto">
+      <source src="https://freesound.org/data/previews/445/445976_931655-lq.mp3" type="audio/mpeg">
     </audio>
-    <audio id="incorrect-sound">
-        <source src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3/incorrect.mp3" type="audio/mpeg">
-    </audio>
+
+<script>
+  function playCorrect(){ const a=document.getElementById('correct-sound'); a.volume=1; a.currentTime=0; a.play(); }
+  function playIncorrect(){ const a=document.getElementById('incorrect-sound'); a.volume=1; a.currentTime=0; a.play(); }
+</script>
+
 
     <script type="module">
         // Importar las bibliotecas de Firebase

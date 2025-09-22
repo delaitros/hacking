@@ -314,8 +314,7 @@
                     return;
                 }
                 
-                // La ruta se ha corregido para que busque la colección directamente en la raíz de tu base de datos,
-                // que es donde se encuentra según la captura de pantalla que me pasaste.
+                // La ruta se ha corregido para que busque la colección directamente en la raíz de tu base de datos.
                 const querySnapshot = await getDocs(collection(db, 'quiz_questions'));
                 
                 if (querySnapshot.empty) {
@@ -350,7 +349,13 @@
             answerInput.focus();
 
             const currentQuestion = questions[currentQuestionIndex];
-            questionDisplay.textContent = currentQuestion.question;
+            // Verificar si el campo 'question' existe y no está vacío antes de mostrarlo
+            if (currentQuestion && currentQuestion.question) {
+                questionDisplay.textContent = currentQuestion.question;
+            } else {
+                questionDisplay.textContent = 'Error: No se encontró la pregunta. Por favor, revisa tus datos en Firestore.';
+                answerInputContainer.style.display = 'none';
+            }
         }
 
         // Función para guardar los resultados del quiz en Firestore
@@ -549,7 +554,6 @@
     </script>
 </body>
 </html>
-
     </script>
 </body>
 </html>

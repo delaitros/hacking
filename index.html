@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducción al hacking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #1a202c;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            width: 100%;
+            max-width: 4xl;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .input-field {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #cbd5e0;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #4c51bf;
+            box-shadow: 0 0 0 2px rgba(76, 81, 191, 0.2);
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+        .btn-primary {
+            background-color: #4c51bf;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #434190;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #2d3748;
+        }
+        .btn-secondary:hover {
+            background-color: #cbd5e0;
+            transform: translateY(-2px);
+        }
+        .btn-green {
+            background-color: #48bb78;
+            color: #ffffff;
+        }
+        .btn-red {
+            background-color: #f56565;
+            color: #ffffff;
+        }
+        .btn-option {
+            width: 100%;
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background-color: #f7fafc;
+            border: 1px solid #cbd5e0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-option:hover {
+            background-color: #edf2f7;
+        }
+        .btn-whatsapp {
+            background-color: #25d366;
+            color: #ffffff;
+        }
+        .btn-whatsapp:hover {
+            background-color: #128c7e;
+            transform: translateY(-2px);
+        }
+        .message-box {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .message-box.incorrect {
+            background-color: #fbd6d6;
+            color: #c53030;
+        }
+        .disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        #question-area {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        #correct-animation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(76, 175, 80, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #incorrect-animation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(220, 38, 38, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #correct-animation-overlay.show, #incorrect-animation-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #correct-animation-message, #incorrect-animation-message {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            animation: zoomIn 0.5s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes zoomIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center text-gray-800">Aplicación de Preguntas</h1>
+        <div class="flex flex-col md:flex-row gap-4">
+            <!-- Sección del quiz para los alumnos -->
+            <div id="student-section" class="bg-gray-50 p-6 rounded-2xl flex-1">
+                <h2 class="section-title">Introducción al hacking, 6to año 724</h2>
+                <div class="input-group mb-4">
+                    <label for="student-name" class="font-semibold text-gray-700">Tu Nombre:</label>
+                    <input type="text" id="student-name" class="input-field" placeholder="Escribe tu nombre">
+                </div>
+                <div id="question-area" class="text-center">
+                    <p id="question-display" class="text-lg font-semibold text-gray-800 mb-4">Cargando preguntas...</p>
+                    <div id="answer-input-container" class="flex flex-col items-center gap-2" style="display: none;">
+                        <input type="text" id="answer-input" class="input-field max-w-lg" placeholder="Escribe tu respuesta aquí...">
+                        <button id="submit-answer-btn" class="btn btn-primary">Verificar Respuesta</button>
+                    </div>
+                    <div id="student-message-container"></div>
+                    <div class="flex flex-col md:flex-row gap-2 mt-4">
+                        <button id="next-question-btn" class="btn btn-secondary flex-1 disabled">Siguiente Pregunta</button>
+                        <button id="hint-btn" class="btn btn-whatsapp flex-1 disabled">💡 Pedir Pista (WhatsApp)</button>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-gray-200 text-center">
+                    <h2 class="section-title">Puntuación</h2>
+                    <p id="score-display" class="text-2xl font-bold text-gray-800">0 puntos</p>
+                    <button id="reset-btn" class="btn btn-red w-full mt-4">Reiniciar Quiz</button>
+                    <button id="music-toggle-btn" class="btn btn-secondary w-full mt-4">🎵 Pausar Música</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay de animación para respuesta correcta -->
+    <div id="correct-animation-overlay">
+        <div id="correct-animation-message">
+            ¡Respuesta Correcta!
+        </div>
+    </div>
+    
+    <!-- Overlay de animación para respuesta incorrecta -->
+    <div id="incorrect-animation-overlay">
+        <div id="incorrect-animation-message">
+            ¡Respuesta Incorrecta!
+        </div>
+    </div>
+
+    <!-- Audio para la música de fondo -->
+    <audio id="background-music" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-jazzyfrenchy.mp3" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <!-- Audios para efectos de sonido -->
+    <audio id="correct-sound">
+        <source src="https://www.learninggamesforkids.com/assets/audio/correct-answer-1.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="incorrect-sound">
+        <source src="https://www.learninggamesforkids.com/assets/audio/wrong-answer.mp3" type="audio/mpeg">
+    </audio>
+
+    <script type="module">
+        // Importar las bibliotecas de Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, setLogLevel, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Establecer el nivel de log para depuración de Firestore
+        setLogLevel('debug');
+
+        // Variables globales del entorno de Canvas
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Inicializar Firebase
+        let app;
+        let db;
+        let auth;
+        let userId;
+        
+        // Declaración de variables globales del quiz
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let score = { points: 0, questionsAnswered: 0 };
+        let currentQuestionAttempts = 0;
+        
+        // Número de WhatsApp del profesor precargado
+        const teacherPhone = '+5492804292040';
+
+        // Referencias a los elementos del DOM
+        const studentNameEl = document.getElementById('student-name');
+        const questionDisplay = document.getElementById('question-display');
+        const answerInput = document.getElementById('answer-input');
+        const submitAnswerBtn = document.getElementById('submit-answer-btn');
+        const studentMessageContainer = document.getElementById('student-message-container');
+        const scoreDisplay = document.getElementById('score-display');
+        const nextQuestionBtn = document.getElementById('next-question-btn');
+        const hintBtn = document.getElementById('hint-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const backgroundMusic = document.getElementById('background-music');
+        const musicToggleBtn = document.getElementById('music-toggle-btn');
+        const correctSound = document.getElementById('correct-sound');
+        const incorrectSound = document.getElementById('incorrect-sound');
+        const correctAnimationOverlay = document.getElementById('correct-animation-overlay');
+        const incorrectAnimationOverlay = document.getElementById('incorrect-animation-overlay');
+        const answerInputContainer = document.getElementById('answer-input-container');
+        
+        // Función para cargar las preguntas desde Firestore
+        async function fetchQuestions() {
+            try {
+                if (!db) {
+                    console.error("Firestore no está inicializado. No se pueden cargar las preguntas.");
+                    questionDisplay.textContent = 'Error: No se pueden cargar las preguntas. Por favor, reinicia la aplicación.';
+                    return;
+                }
+                const querySnapshot = await getDocs(collection(db, `/artifacts/${appId}/public/data/quiz_questions`));
+                if (querySnapshot.empty) {
+                    questionDisplay.textContent = 'No hay preguntas disponibles. Por favor, añade preguntas a la base de datos.';
+                    answerInputContainer.style.display = 'none';
+                    return;
+                }
+                questions = querySnapshot.docs.map(doc => doc.data());
+                renderQuestion();
+                answerInputContainer.style.display = 'flex';
+            } catch (error) {
+                console.error("Error al cargar las preguntas: ", error);
+                questionDisplay.textContent = 'Error al cargar las preguntas. Revisa la consola para más detalles.';
+            }
+        }
+
+        // Función para renderizar la pregunta actual
+        function renderQuestion() {
+            if (questions.length === 0) {
+                questionDisplay.textContent = 'No hay preguntas disponibles.';
+                answerInputContainer.style.display = 'none';
+                nextQuestionBtn.classList.add('disabled');
+                hintBtn.classList.add('disabled');
+                return;
+            }
+
+            nextQuestionBtn.classList.add('disabled');
+            hintBtn.classList.remove('disabled');
+            submitAnswerBtn.classList.remove('disabled');
+            answerInput.value = '';
+            studentMessageContainer.innerHTML = '';
+            answerInput.focus();
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionDisplay.textContent = currentQuestion.question;
+        }
+
+        // Función para guardar los resultados del quiz en Firestore
+        async function saveQuizResult() {
+            try {
+                if (!db) {
+                    console.error("Firestore no está inicializado.");
+                    return;
+                }
+                const docRef = await addDoc(collection(db, `/artifacts/${appId}/public/data/quiz_results`), {
+                    name: studentNameEl.value || 'Anónimo',
+                    score_points: score.points,
+                    totalQuestions: questions.length,
+                    date: serverTimestamp(),
+                    userId: userId
+                });
+                console.log("Resultado del quiz guardado con ID: ", docRef.id);
+            } catch (e) {
+                console.error("Error al añadir el documento: ", e);
+            }
+        }
+
+        // Función para manejar la respuesta del usuario
+        function handleAnswer() {
+            const userAnswer = answerInput.value.trim().toLowerCase();
+            const correctAnswer = questions[currentQuestionIndex].correctAnswer.trim().toLowerCase();
+
+            studentMessageContainer.innerHTML = '';
+            
+            if (userAnswer === correctAnswer) {
+                try {
+                    correctSound.play();
+                } catch (e) {
+                    console.error('Error al reproducir el sonido de respuesta correcta:', e);
+                }
+
+                // Calcular puntos basados en los intentos
+                let pointsForQuestion = 1000;
+                for (let i = 0; i < currentQuestionAttempts; i++) {
+                    pointsForQuestion /= 2;
+                }
+                score.points += Math.round(pointsForQuestion);
+                score.questionsAnswered++;
+                currentQuestionAttempts = 0;
+
+                updateScoreDisplay();
+
+                // Mostrar animación de respuesta correcta
+                correctAnimationOverlay.classList.add('show');
+                
+                setTimeout(() => {
+                    correctAnimationOverlay.classList.remove('show');
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex < questions.length) {
+                        renderQuestion();
+                    } else {
+                        endQuiz();
+                    }
+                }, 2000); // 2 segundos para la animación
+            } else {
+                try {
+                    incorrectSound.play();
+                } catch (e) {
+                    console.error('Error al reproducir el sonido de respuesta incorrecta:', e);
+                }
+                currentQuestionAttempts++;
+                updateScoreDisplay();
+
+                // Mostrar animación de respuesta incorrecta
+                incorrectAnimationOverlay.classList.add('show');
+
+                setTimeout(() => {
+                    incorrectAnimationOverlay.classList.remove('show');
+                }, 1500); // 1.5 segundos para la animación
+            }
+        }
+
+        // Función para finalizar el quiz
+        function endQuiz() {
+            saveQuizResult();
+
+            questionDisplay.textContent = '¡Has completado el quiz!';
+            answerInputContainer.style.display = 'none';
+            nextQuestionBtn.classList.add('disabled');
+            hintBtn.classList.add('disabled');
+            studentMessageContainer.innerHTML = '';
+            const finalScoreMessage = document.createElement('div');
+            finalScoreMessage.classList.add('message-box', 'correct');
+            finalScoreMessage.textContent = `Puntuación final: ${score.points} puntos`;
+            studentMessageContainer.appendChild(finalScoreMessage);
+
+            // Generar y enviar mensaje por WhatsApp
+            const studentName = studentNameEl.value.trim() || 'Un alumno anónimo';
+            const message = `¡Hola! ${studentName} ha completado el quiz "Introducción al hacking" con una puntuación de ${score.points} puntos.`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${teacherPhone}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Función para actualizar la visualización de la puntuación
+        function updateScoreDisplay() {
+            scoreDisplay.textContent = `${score.points} puntos`;
+        }
+
+        // Manejador del botón "Verificar Respuesta"
+        submitAnswerBtn.addEventListener('click', handleAnswer);
+        
+        // Permite presionar "Enter" para enviar la respuesta
+        answerInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAnswer();
+            }
+        });
+
+        // Manejador del botón "Siguiente Pregunta"
+        nextQuestionBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                renderQuestion();
+            } else {
+                endQuiz();
+            }
+        });
+        
+        // Manejador del botón "Pedir Pista"
+        hintBtn.addEventListener('click', () => {
+            const studentName = studentNameEl.value.trim();
+            const currentQuestion = questions[currentQuestionIndex];
+
+            if (!studentName) {
+                studentMessageContainer.innerHTML = `<div class="message-box incorrect">Por favor, ingresa tu nombre para pedir ayuda.</div>`;
+                return;
+            }
+
+            const message = `Hola, soy ${studentName} y necesito una pista con esta pregunta: "${currentQuestion.question}"`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${teacherPhone}?text=${encodedMessage}`;
+            
+            window.open(whatsappUrl, '_blank');
+
+            const hintMessage = document.createElement('div');
+            hintMessage.classList.add('message-box', 'correct');
+            hintMessage.textContent = '¡Pista enviada! Revisa tu WhatsApp.';
+            studentMessageContainer.innerHTML = '';
+            studentMessageContainer.appendChild(hintMessage);
+        });
+
+        // Manejador del botón "Reiniciar Quiz"
+        resetBtn.addEventListener('click', () => {
+            currentQuestionIndex = 0;
+            score = { points: 0, questionsAnswered: 0 };
+            currentQuestionAttempts = 0;
+            updateScoreDisplay();
+            answerInputContainer.style.display = 'flex';
+            fetchQuestions();
+        });
+
+        // Manejador del botón para activar/desactivar la música
+        musicToggleBtn.addEventListener('click', () => {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play();
+                musicToggleBtn.textContent = '🎵 Pausar Música';
+            } else {
+                backgroundMusic.pause();
+                musicToggleBtn.textContent = '▶️ Reproducir Música';
+            }
+        });
+
+        // Cargar los datos y comenzar el quiz al cargar la página
+        window.onload = async () => {
+            if (firebaseConfig && Object.keys(firebaseConfig).length > 0) {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Autenticar al usuario de forma anónima o con un token personalizado
+                try {
+                    if (initialAuthToken) {
+                        const userCredential = await signInWithCustomToken(auth, initialAuthToken);
+                        userId = userCredential.user.uid;
+                        console.log("Autenticación exitosa con token personalizado.");
+                    } else {
+                        const userCredential = await signInAnonymously(auth);
+                        userId = userCredential.user.uid;
+                        console.log("Autenticación exitosa como usuario anónimo.");
+                    }
+                } catch (error) {
+                    console.error("Error de autenticación: ", error);
+                }
+            } else {
+                console.warn("Configuración de Firebase no encontrada. La base de datos no estará disponible.");
+            }
+
+            fetchQuestions();
+            // Intenta reproducir la música automáticamente
+            backgroundMusic.play().then(() => {
+                console.log('Música reproducida automáticamente.');
+            }).catch(error => {
+                console.log('La reproducción automática de la música fue bloqueada por el navegador. El usuario debe hacer clic en el botón de música para reproducirla.');
+                musicToggleBtn.textContent = '▶️ Reproducir Música';
+            });
+        };
+
+    </script>
+</body>
+</html>

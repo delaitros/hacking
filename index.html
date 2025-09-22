@@ -304,6 +304,15 @@
         const correctAnimationOverlay = document.getElementById('correct-animation-overlay');
         const incorrectAnimationOverlay = document.getElementById('incorrect-animation-overlay');
         const answerInputContainer = document.getElementById('answer-input-container');
+
+        // Event listener para manejar la interacción inicial del usuario y permitir la reproducción de sonidos
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.addEventListener('click', () => {
+                if (backgroundMusic.paused) {
+                    backgroundMusic.play().catch(e => console.error('Error al reproducir la música de fondo:', e));
+                }
+            }, { once: true });
+        });
         
         // Función para cargar las preguntas desde Firestore
         async function fetchQuestions() {

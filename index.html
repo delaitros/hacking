@@ -251,17 +251,26 @@
 
     <script type="module">
         // Importar las bibliotecas de Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp, setLogLevel, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, setLogLevel, getDocs } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
         // Establecer el nivel de log para depuración de Firestore
         setLogLevel('debug');
 
-        // Variables globales del entorno de Canvas
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Tu configuración de Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyCe6IZxXWbV4oh5omAEQ1q5vOiJ_Zt2k3A",
+          authDomain: "quizz-sexto.firebaseapp.com",
+          projectId: "quizz-sexto",
+          storageBucket: "quizz-sexto.firebasestorage.app",
+          messagingSenderId: "538951385566",
+          appId: "1:538951385566:web:f24284c89cd67b6c4bdd4f",
+          measurementId: "G-PDVXLXYHQ9"
+        };
+        
+        // Usamos el projectId como el ID de la app para la base de datos
+        const appId = firebaseConfig.projectId;
 
         // Inicializar Firebase
         let app;
@@ -509,29 +518,19 @@
 
         // Cargar los datos y comenzar el quiz al cargar la página
         window.onload = async () => {
-            if (firebaseConfig && Object.keys(firebaseConfig).length > 0) {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
 
-                // Autenticar al usuario de forma anónima o con un token personalizado
-                try {
-                    if (initialAuthToken) {
-                        const userCredential = await signInWithCustomToken(auth, initialAuthToken);
-                        userId = userCredential.user.uid;
-                        console.log("Autenticación exitosa con token personalizado.");
-                    } else {
-                        const userCredential = await signInAnonymously(auth);
-                        userId = userCredential.user.uid;
-                        console.log("Autenticación exitosa como usuario anónimo.");
-                    }
-                } catch (error) {
-                    console.error("Error de autenticación: ", error);
-                }
-            } else {
-                console.warn("Configuración de Firebase no encontrada. La base de datos no estará disponible.");
+            // Autenticar al usuario de forma anónima
+            try {
+                const userCredential = await signInAnonymously(auth);
+                userId = userCredential.user.uid;
+                console.log("Autenticación exitosa como usuario anónimo.");
+            } catch (error) {
+                console.error("Error de autenticación: ", error);
             }
-
+            
             fetchQuestions();
             // Intenta reproducir la música automáticamente
             backgroundMusic.play().then(() => {
